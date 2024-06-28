@@ -18,16 +18,26 @@ if (typeof window === 'undefined') {
         var stdin = new java.io.BufferedReader(new java.io.InputStreamReader(
             java.lang.System.in));
         var buf;
-        while (buf = stdin.readLine()) {
-            print(buf);
-        }
+        var i = 0;
         var table = createTable();
-        // table.reserves[0] = "8H";
-        // table.foundations[3] = "9S";
-        // table.cascades[0].push("4D");
-        // table.cascades[0].push("4C");
-        // table.cascades[7].push("9C");
+        var solution = [];
+        let cascades = true;
+        while (buf = stdin.readLine()) {
+            var ar = buf.trim().split(" ");
+            if (ar[0] == '.') {
+                cascades = false;
+                i = 0;
+                continue;
+            }
+            if (cascades) {
+                table.cascades[i] = ar;
+                i++;
+            } else {
+                solution.push(ar);
+            }
+        }
         print(JSON.stringify(table));
+        print(JSON.stringify(solution));
     } catch (e) {
         print("Caught exception:");
         print(e.stack);
