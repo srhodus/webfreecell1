@@ -1,0 +1,14 @@
+{
+  "name": "webfreecell1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/srhodus/webfreecell1.git",
+  "author": "srhodus <s.rhodus@yahoo.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "scripts": {
+      "test": "jest"
+  }
+}
