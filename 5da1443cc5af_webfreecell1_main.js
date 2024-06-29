@@ -16,4 +16,5 @@ function createTableFromJson(desc) {
     return JSON.parse(desc);
 }
 
-module.exports = createTable, createTableFromJson;
+module.exports.createTable= createTable;
+module.exports.createTableFromJson = createTableFromJson;

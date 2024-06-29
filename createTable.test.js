@@ -1,7 +1,7 @@
-const createTable = require("./5da1443cc5af_webfreecell1_main");
+const t = require("./5da1443cc5af_webfreecell1_main");
 
 test("Test create empty table", () => {
-    var table = createTable();
+    var table = t.createTable();
     expect(table.reserves).toStrictEqual(new Array(4).fill(""));
     expect(table.foundations).toStrictEqual(new Array(4).fill(""));
     expect(table.cascades.length).toBe(8);
