@@ -1,4 +1,4 @@
-const t = require("./5da1443cc5af_webfreecell1_main");
+const createTable = require("./5da1443cc5af_webfreecell1_main");
 
 test("Test create table from JSON", () => {
     var desc = `{
@@ -15,7 +15,7 @@ test("Test create table from JSON", () => {
             ["5C", "9C", "QH", "8H", "2H", "7D"]
         ]
     }`;
-    var table = t.createTableFromJson(desc);
+    var table = createTable().fromJSON(desc);
     expect(table.reserves).toStrictEqual(new Array(4).fill(""));
     expect(table.foundations).toStrictEqual(new Array(4).fill(""));
     expect(table.cascades[0]).toEqual(["QD", "4D", "TD", "7S", "AH", "3H", "AS"]);

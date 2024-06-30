@@ -8,13 +8,15 @@ function createTable() {
     return {
         reserves: new Array(NO_RESERVES).fill(""),
         foundations: new Array(NO_FOUNDATIONS).fill(""),
-        cascades: new Array(NO_CASCADES).fill(new Array())
+        cascades: new Array(NO_CASCADES).fill(new Array()),
+        fromJSON(desc) {
+            var temp = JSON.parse(desc);
+            this.reserves = temp.reserves;
+            this.foundations = temp.foundations;
+            this.cascades = temp.cascades;
+            return this;
+        }
     };
 }
 
-function createTableFromJson(desc) {
-    return JSON.parse(desc);
-}
-
-module.exports.createTable= createTable;
-module.exports.createTableFromJson = createTableFromJson;
+module.exports = createTable;
