@@ -16,7 +16,7 @@ function createTableFromJson(desc) {
     return JSON.parse(desc);
 }
 
-function move(str) {
+function move(table, str) {
     if (!(typeof str === 'string' || str instanceof String)) {
         throw new Error("Invalid type for move!");
     }
@@ -26,7 +26,23 @@ function move(str) {
     var from = str.charAt(0);
     var to = str.charAt(1);
     if (!(isNaN(parseInt(from, 10)) && isNaN(parseInt(to, 10)))) {
-        print(from + " => " + to);
+        // Move cascade to cascade
+        var fromNo = parseInt(from, 10);
+        var toNo = parseInt(to, 10);
+        var valid = true;
+        if (fromNo < 0 || fromNo >= table.cascades.length) {
+            valid = false;
+        }
+        if (toNo < 0 || toNo >= table.cascades.length) {
+            valid = false;
+        }
+        if (fromNo == toNo) {
+            valid = false;
+        }
+        if (table.cascades[fromNo].length === 0) {
+            valid = false;
+        }
+        table.cascades[toNo].push(table.cascades[fromNo].pop());
     }
 }
 
@@ -71,5 +87,15 @@ function test_createTableFromJson2() {
 }
 
 function test_move1() {
-    move("12");
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["2D"],[],[],[],[],[],[],[]]}`;
+    var expect = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[[],["2D"],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "01");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move1 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
 }
