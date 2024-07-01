@@ -63,7 +63,7 @@ function reserve(str) {
     if (str.length !== 1) {
         valid = false;
     }
-    const idx = RESERVES.indexOf(str);
+    const idx = RESERVES.indexOf(str.toUpperCase());
     if (idx === -1) {
         valid = false;
     }
@@ -107,34 +107,35 @@ function move(table, str) {
         }
         if (to.toUpperCase() === "H") {
             // Move from cascade to foundations
-            var c = table.cascades[fromNo].pop();
+            var c = table.cascades[fromNo][table.cascades[fromNo].length-1];
             var idx = suit(c);
             const r = rank(c);
             if (table.foundations[idx].length === 0 && r === 0) {
                 table.foundations[idx] = c;
+                table.cascades[fromNo].pop();
             } else if (table.foundations[idx].length > 0) {
                 const cur = table.foundations[idx];
                 if (r === rank(cur)+1) {
                     table.foundations[idx] = c;
+                    table.cascades[fromNo].pop();
                 }
             } else {
-                table.cascades[fromNo].push(c);
                 throw new Error("Invalid move!");
             }
         } else {
             // Move from cascade to reserves
-            var c = table.cascades[fromNo].pop();
-            var idx = reserve(to.toUpperCase());
+            var c = table.cascades[fromNo][table.cascades[fromNo].length-1];
+            var idx = reserve(to);
             if (table.reserves[idx].length === 0) {
                 table.reserves[idx] = c;
+                table.cascades[fromNo].pop();
             } else {
-                table.cascades[fromNo].push(c);
                 throw new Error("Invalid move!");
             }
         }
     } else if (isNaN(parseInt(from, 10)) && !isNaN(parseInt(to, 10))) {
         // Move from reserves to cascade
-        var idx = reserve(from.toUpperCase());
+        var idx = reserve(from);
         if (table.reserves[idx].length === 0) {
             throw new Error("Invalid move!");
         }
