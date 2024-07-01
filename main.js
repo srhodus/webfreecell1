@@ -68,11 +68,28 @@ function move(table, str) {
                     table.foundations[idx] = c;
                 }
             } else {
+                table.cascades[fromNo].push(c);
                 throw new Error("Invalid move!");
             }
         } else {
             // Move from cascade to reserves
+            var c = table.cascades[fromNo].pop();
+            var idx = RESERVES.indexOf(to.toUpperCase());
+            if (idx === -1) {
+                table.cascades[fromNo].push(c);
+                throw new Error("Invalid move!");
+            }
+            if (table.reserves[idx].length === 0) {
+                table.reserves[idx] = c;
+            } else {
+                table.cascades[fromNo].push(c);
+                throw new Error("Invalid move!");
+            }
         }
+    } else if (isNaN(parseInt(from, 10)) && !isNaN(parseInt(to, 10))) {
+        // Move from reserves to cascade
+    } else if (isNaN(parseInt(from, 10)) && isNaN(parseInt(to, 10))) {
+        // Move from reserves to foundations
     }
 }
 
@@ -87,6 +104,11 @@ if (typeof window === 'undefined') {
     test_move5();
     test_move6();
     test_move7();
+    test_move8();
+    test_move9();
+    test_move10();
+    test_move11();
+    test_move12();
 }
 
 function test_createTable() {
@@ -214,6 +236,76 @@ function test_move7() {
     var actual = JSON.stringify(table);
     if (expect !== actual) {
         print("test_move7 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move8() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","","QS"],"cascades":[["KS"],[],[],[],[],[],[],[]]}`;
+    var expect = `{"reserves":["","","",""],"foundations":["","","","KS"],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "0H");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move8 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move9() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["8C"],[],[],[],[],[],[],[]]}`;
+    var expect = `{"reserves":["8C","","",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "0A");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move9 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move10() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["8C"],[],[],[],[],[],[],[]]}`;
+    var expect = `{"reserves":["","8C","",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "0B");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move10 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move11() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["8C"],[],[],[],[],[],[],[]]}`;
+    var expect = `{"reserves":["","","8C",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "0C");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move11 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move12() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["8C"],[],[],[],[],[],[],[]]}`;
+    var expect = `{"reserves":["","","","8C"],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "0D");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move12 failed!");
         print("expected: " + expect);
         print("actual  : " + actual);
         throw new Error();
