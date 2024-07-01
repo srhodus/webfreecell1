@@ -6,6 +6,10 @@ const NO_FOUNDATIONS = 4;
 const RANK = "A23456789TJQK";
 const SUIT = "CDHS";
 const RESERVES = "ABCD";
+const COLOR = {
+    BLACK: 0,
+    RED: 1
+}
 
 function createTable() {
     return {
@@ -19,15 +23,65 @@ function createTableFromJson(desc) {
     return JSON.parse(desc);
 }
 
+function suit(str) {
+    var valid = true;
+    if (str.length !== 2) {
+        valid = false;
+    }
+    const idx = SUIT.indexOf(str[1]);
+    if (idx === -1) {
+        valid = false;
+    }
+    if (!valid) {
+        throw new Error(`Invalid card suit '${str}'!`);
+    }
+    return idx;
+}
+
+function rank(str) {
+    var valid = true;
+    if (str.length !== 2) {
+        valid = false;
+    }
+    const idx = RANK.indexOf(str[0]);
+    if (idx === -1) {
+        valid = false;
+    }
+    if (!valid) {
+        throw new Error(`Invalid card rank '${str}'!`);
+    }
+    return idx;
+}
+
+function color(str) {
+    const s = suit(str);
+    return (s === "D" || s === "H") ? COLOR_RED : COLOR_BLACK;
+}
+
+function reserve(str) {
+    var valid = true;
+    if (str.length !== 1) {
+        valid = false;
+    }
+    const idx = RESERVES.indexOf(str);
+    if (idx === -1) {
+        valid = false;
+    }
+    if (!valid) {
+        throw new Error(`Invalid reserve position '${str}'!`);
+    }
+    return idx;
+}
+
 function move(table, str) {
     if (!(typeof str === 'string' || str instanceof String)) {
         throw new Error("Invalid type for move!");
     }
     if (str.length !== 2) {
-        throw new Error("Invalid move; too short!");
+        throw new Error("Invalid move!");
     }
-    var from = str.charAt(0);
-    var to = str.charAt(1);
+    const from = str.charAt(0);
+    const to = str.charAt(1);
     if (!isNaN(parseInt(from, 10)) && !isNaN(parseInt(to, 10))) {
         // Move cascade to cascade
         var fromNo = parseInt(from, 10);
@@ -54,17 +108,13 @@ function move(table, str) {
         if (to.toUpperCase() === "H") {
             // Move from cascade to foundations
             var c = table.cascades[fromNo].pop();
-            var idx = SUIT.indexOf(c[1]);
-            if (idx === -1) {
-                table.cascades[fromNo].push(c);
-                throw new Error("Invalid move!");
-            }
-            var r = RANK.indexOf(c[0]);
+            var idx = suit(c);
+            const r = rank(c);
             if (table.foundations[idx].length === 0 && r === 0) {
                 table.foundations[idx] = c;
             } else if (table.foundations[idx].length > 0) {
                 const cur = table.foundations[idx];
-                if (r === RANK.indexOf(cur[0])+1) {
+                if (r === rank(cur)+1) {
                     table.foundations[idx] = c;
                 }
             } else {
@@ -74,11 +124,7 @@ function move(table, str) {
         } else {
             // Move from cascade to reserves
             var c = table.cascades[fromNo].pop();
-            var idx = RESERVES.indexOf(to.toUpperCase());
-            if (idx === -1) {
-                table.cascades[fromNo].push(c);
-                throw new Error("Invalid move!");
-            }
+            var idx = reserve(to.toUpperCase());
             if (table.reserves[idx].length === 0) {
                 table.reserves[idx] = c;
             } else {
@@ -88,6 +134,16 @@ function move(table, str) {
         }
     } else if (isNaN(parseInt(from, 10)) && !isNaN(parseInt(to, 10))) {
         // Move from reserves to cascade
+        var idx = reserve(from.toUpperCase());
+        if (table.reserves[idx].length === 0) {
+            throw new Error("Invalid move!");
+        }
+        var toNo = parseInt(to, 10);
+        if (toNo < 0 || toNo >= table.cascades.length) {
+            throw new Error("Invalid move!");
+        }
+        table.cascades[toNo].push(table.reserves[idx]);
+        table.reserves[idx] = "";
     } else if (isNaN(parseInt(from, 10)) && isNaN(parseInt(to, 10))) {
         // Move from reserves to foundations
     }
@@ -109,6 +165,8 @@ if (typeof window === 'undefined') {
     test_move10();
     test_move11();
     test_move12();
+    test_move13();
+    test_move14();
 }
 
 function test_createTable() {
@@ -306,6 +364,34 @@ function test_move12() {
     var actual = JSON.stringify(table);
     if (expect !== actual) {
         print("test_move12 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move13() {
+    var setup = `{"reserves":["QD","","",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var expect = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[[],[],["QD"],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "A2");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move13 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move14() {
+    var setup = `{"reserves":["","","","2H"],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],["3S"]]}`;
+    var expect = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],["3S","2H"]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "D7");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move14 failed!");
         print("expected: " + expect);
         print("actual  : " + actual);
         throw new Error();
