@@ -3,6 +3,9 @@
 const NO_CASCADES = 8;
 const NO_RESERVES = 4;
 const NO_FOUNDATIONS = 4;
+const RANK = "A23456789TJQK";
+const SUIT = "CDHS";
+const RESERVES = "ABCD";
 
 function createTable() {
     return {
@@ -36,13 +39,33 @@ function move(table, str) {
         if (toNo < 0 || toNo >= table.cascades.length) {
             valid = false;
         }
-        if (fromNo == toNo) {
+        if (fromNo === toNo) {
             valid = false;
         }
-        if (table.cascades[fromNo].length === 0) {
-            valid = false;
+        if (!valid) {
+            throw new Error("Invalid move!");
         }
         table.cascades[toNo].push(table.cascades[fromNo].pop());
+    } else if (!isNaN(parseInt(from, 10)) && isNaN(parseInt(to, 10))) {
+        var fromNo = parseInt(from, 10);
+        if (!validateCascade(table, fromNo)) {
+            return false;
+        }
+        if (to.toUpperCase() === "H") {
+            // Move from cascade to foundations
+            var c = table.cascades[fromNo].pop();
+            var idx = SUIT.indexOf(c);
+            if (idx === -1) {
+                table.cascades[fromNo].push(c);
+                return false;
+            }
+            if (table.foundations[idx].length === 0 && RANK.indexOf(c) === 0) {
+                table.foundations[idx].push(c);
+                return true;
+            }
+        } else {
+            // Move from cascade to reserves
+        }
     }
 }
 
@@ -51,6 +74,7 @@ if (typeof window === 'undefined') {
     test_createTableFromJson1();
     test_createTableFromJson2();
     test_move1();
+    test_move2();
 }
 
 function test_createTable() {
@@ -94,6 +118,20 @@ function test_move1() {
     var actual = JSON.stringify(table);
     if (expect !== actual) {
         print("test_move1 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move2() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],["2D", "9S"]]}`;
+    var expect = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],["9S"],["2D"]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "76");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move2 failed!");
         print("expected: " + expect);
         print("actual  : " + actual);
         throw new Error();
