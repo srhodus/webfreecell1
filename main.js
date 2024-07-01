@@ -16,10 +16,25 @@ function createTableFromJson(desc) {
     return JSON.parse(desc);
 }
 
+function move(str) {
+    if (!(typeof str === 'string' || str instanceof String)) {
+        throw new Error("Invalid type for move!");
+    }
+    if (str.length !== 2) {
+        throw new Error("Invalid move; too short!");
+    }
+    var from = str.charAt(0);
+    var to = str.charAt(1);
+    if (!(isNaN(parseInt(from, 10)) && isNaN(parseInt(to, 10)))) {
+        print(from + " => " + to);
+    }
+}
+
 if (typeof window === 'undefined') {
     test_createTable();
     test_createTableFromJson1();
     test_createTableFromJson2();
+    test_move1();
 }
 
 function test_createTable() {
@@ -53,4 +68,8 @@ function test_createTableFromJson2() {
         print("actual  : " + actual);
         throw new Error();
     }
+}
+
+function test_move1() {
+    move("12");
 }
