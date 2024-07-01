@@ -73,6 +73,10 @@ function reserve(str) {
     return idx;
 }
 
+function stackable(rhs, lhs) {
+    return color(rhs) !== color(lhs) && rank(rhs)+1 === rank(lhs);
+}
+
 function move(table, str) {
     if (!(typeof str === 'string' || str instanceof String)) {
         throw new Error("Invalid type for move!");
@@ -102,9 +106,9 @@ function move(table, str) {
         if (table.cascades[toNo].length === 0) {
             table.cascades[toNo].push(table.cascades[fromNo].pop());
         } else {
-            const rhs = table.cascades[fromNo][table.cascades[fromNo].length-1];
-            const lhs = table.cascades[toNo][table.cascades[toNo].length-1];
-            if ((color(rhs) !== color(lhs)) && (rank(rhs)+1 === rank(lhs))) {
+            var rhs = table.cascades[fromNo][table.cascades[fromNo].length-1];
+            var lhs = table.cascades[toNo][table.cascades[toNo].length-1];
+            if (stackable(rhs, lhs)) {
                 table.cascades[toNo].push(table.cascades[fromNo].pop());
             } else {
                 throw new Error("Invalid move!");
@@ -153,10 +157,36 @@ function move(table, str) {
         if (toNo < 0 || toNo >= table.cascades.length) {
             throw new Error("Invalid move!");
         }
-        table.cascades[toNo].push(table.reserves[idx]);
-        table.reserves[idx] = "";
+        if (table.cascades[toNo].length === 0) {
+            table.cascades[toNo].push(table.reserves[idx]);
+            table.reserves[idx] = "";
+        } else {
+            var rhs = table.reserves[idx];
+            var lhs = table.cascades[toNo][table.cascades[toNo].length-1];
+            if (stackable(rhs, lhs)) {
+                table.cascades[toNo].push(rhs);
+                table.reserves[idx] = "";
+            } else {
+                throw new Error("Invalid move!");
+            }
+        }
     } else if (isNaN(parseInt(from, 10)) && isNaN(parseInt(to, 10))) {
         // Move from reserves to foundations
+        var idx = reserve(from);
+        if (table.reserves[idx].length === 0) {
+            throw new Error("Invalid move!");
+        }
+        var c = table.reserves[idx];
+        if (table.foundations[suit(c)].length === 0 && rank(c) === 0) {
+            table.foundations[suit(c)] = c;
+            table.reserves[idx] = "";
+        } else if (suit(c) === suit(table.foundations[suit(c)])
+            && rank(c) === rank(table.foundations[suit(c)])+1) {
+            table.foundations[suit(c)] = c;
+            table.reserves[idx] = "";
+        } else {
+            throw new Error("Invalid move!");
+        }
     }
 }
 
@@ -183,6 +213,13 @@ if (typeof window === 'undefined') {
     test_move17();
     test_move18();
     test_move19();
+    test_move20();
+    test_move21();
+    test_move22();
+    test_move23();
+    test_move24();
+    test_move25();
+    test_move26();
 }
 
 function test_createTable() {
@@ -488,6 +525,130 @@ function test_move19() {
     var actual = JSON.stringify(table);
     if (expect !== actual) {
         print("test_move19 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move20() {
+    var setup = `{"reserves":["AD","","",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var expect= `{"reserves":["","","",""],"foundations":["","AD","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "AH");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move20 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move21() {
+    var setup = `{"reserves":["","","KS",""],"foundations":["","","","QS"],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var expect= `{"reserves":["","","",""],"foundations":["","","","KS"],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    move(table, "CH");
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_move21 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+
+function test_move22() {
+    var setup = `{"reserves":["","","KS",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var expect= `{"reserves":["","","KS",""],"foundations":["","","",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    var caughtError = false;
+    try {
+        move(table, "CH");
+    } catch (e) {
+        caughtError = true;
+    }
+    var actual = JSON.stringify(table);
+    if (expect !== actual || !caughtError) {
+        print("test_move22 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move23() {
+    var setup = `{"reserves":["AH","","",""],"foundations":["","","2H",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var expect= `{"reserves":["AH","","",""],"foundations":["","","2H",""],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    var caughtError = false;
+    try {
+        move(table, "CH");
+    } catch (e) {
+        caughtError = true;
+    }
+    var actual = JSON.stringify(table);
+    if (expect !== actual || !caughtError) {
+        print("test_move23 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move24() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["9D"],[],[],[],[],[],[],[]]}`;
+    var expect= `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["9D"],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    var caughtError = false;
+    try {
+        move(table, "");
+    } catch (e) {
+        caughtError = true;
+    }
+    var actual = JSON.stringify(table);
+    if (expect !== actual || !caughtError) {
+        print("test_move24 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move25() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["9D"],[],[],[],[],[],[],[]]}`;
+    var expect= `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["9D"],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    var caughtError = false;
+    try {
+        move(table, 9);
+    } catch (e) {
+        caughtError = true;
+    }
+    var actual = JSON.stringify(table);
+    if (expect !== actual || !caughtError) {
+        print("test_move25 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_move26() {
+    var setup = `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["9D"],[],[],[],[],[],[],[]]}`;
+    var expect= `{"reserves":["","","",""],"foundations":["","","",""],"cascades":[["9D"],[],[],[],[],[],[],[]]}`;
+    var table = createTableFromJson(setup);
+    var caughtError = false;
+    try {
+        move(table, "99");
+    } catch (e) {
+        caughtError = true;
+    }
+    var actual = JSON.stringify(table);
+    if (expect !== actual || !caughtError) {
+        print("test_move26 failed!");
         print("expected: " + expect);
         print("actual  : " + actual);
         throw new Error();
