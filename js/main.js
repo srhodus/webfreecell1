@@ -248,6 +248,25 @@ if (typeof window === 'undefined') {
     test_move25();
     test_move26();
     test_solve1();
+} else {
+    var ready = (callback) => {
+        if (document.readyState != "loading") {
+            callback();
+        } else {
+            document.addEventListener("DOMContentLoaded", callback);
+        }
+    }
+
+    ready(() => {
+        const form = document.getElementById("play_form");
+        form.addEventListener("submit", (e) => {
+            switch (e.submitter.id) {
+                case "move_btn":
+                    console.log("You clicked on the move button!");
+                    break;
+            }
+        });
+    });
 }
 
 function test_createTable() {
