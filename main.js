@@ -220,6 +220,7 @@ if (typeof window === 'undefined') {
     test_move24();
     test_move25();
     test_move26();
+    test_solve1();
 }
 
 function test_createTable() {
@@ -653,4 +654,22 @@ function test_move26() {
         print("actual  : " + actual);
         throw new Error();
     }
+}
+
+function test_solve1() {
+    var setup = `{
+    "reserves":["","","",""],
+    "foundations":["","","",""],
+    "cascades":[
+            ["QD","4D","TD","7S","AH","3H","AS"],
+            ["QC","JD","JC","9D","9S","AD","5S"],
+            ["KC","JS","8C","KS","TC","7H","TH"],
+            ["3C","6H","6C","7C","2S","3D","JH"],
+            ["4C","QS","8S","6S","3S","5H"],
+            ["2C","6D","4S","4H","TS","8D"],
+            ["KD","2D","5D","AC","9H","KH"],
+            ["5C","9C","QH","8H","2H","7D"]
+    ]}`;
+    var table = createTableFromJson(setup);
+    print(JSON.stringify(table));
 }
