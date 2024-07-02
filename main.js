@@ -84,8 +84,8 @@ function move(table, str) {
     if (str.length !== 2) {
         throw new Error("Invalid move!");
     }
-    const from = str.charAt(0);
-    const to = str.charAt(1);
+    const from = str.charAt(0).toUpperCase();
+    const to = str.charAt(1).toUpperCase();
     if (!isNaN(parseInt(from, 10)) && !isNaN(parseInt(to, 10))) {
         // Move cascade to cascade
         var fromNo = parseInt(from, 10);
@@ -121,6 +121,9 @@ function move(table, str) {
         }
         if (to.toUpperCase() === "H") {
             // Move from cascade to foundations
+            if (table.cascades[fromNo].length === 0) {
+                throw new Error("Invalid move!");
+            }
             var c = table.cascades[fromNo][table.cascades[fromNo].length-1];
             var idx = suit(c);
             const r = rank(c);
@@ -138,6 +141,9 @@ function move(table, str) {
             }
         } else {
             // Move from cascade to reserves
+            if (table.cascades[fromNo].length === 0) {
+                throw new Error("Invalid move!");
+            }
             var c = table.cascades[fromNo][table.cascades[fromNo].length-1];
             var idx = reserve(to);
             if (table.reserves[idx].length === 0) {
@@ -188,6 +194,27 @@ function move(table, str) {
             throw new Error("Invalid move!");
         }
     }
+}
+
+function convertMove(movestr) {
+    if (!(typeof movestr === 'string' || movestr instanceof String)) {
+        throw new Error("Invalid type for move!");
+    }
+    if (movestr.length !== 2) {
+        throw new Error("Invalid move!");
+    }
+    var ret = [];
+    for (let i = 0; i < movestr.length; i++) {
+        if (!isNaN(parseInt(movestr[i], 10))) {
+            ret.push(parseInt(movestr[i], 10)-1);
+        } else {
+            ret.push(movestr[i]);
+        }
+    }
+    if (ret.length !== 2) {
+        throw new Error("Unable to convert move string!");
+    }
+    return ret.join("");
 }
 
 if (typeof window === 'undefined') {
@@ -671,5 +698,24 @@ function test_solve1() {
             ["5C","9C","QH","8H","2H","7D"]
     ]}`;
     var table = createTableFromJson(setup);
-    print(JSON.stringify(table));
+    var solution = ["1h","6a","64","62","65","15","7b","74","7h","1h","61",
+        "6h","2c","21","c1","1h","5c","5d","56","d6","c6","51","58","78",
+        "2h","7h","54","57","a2","4a","4c","4d","47","d7","c7","a7","8a",
+        "8c","87","c7","a7","4a","4h","8h","1h","6h","48","ah","4a","4c",
+        "4h","5h","1h","6h","14","15","12","52","42","14","6h","1h","2h",
+        "7h","8d","86","d6","85","83","8h","7h","ah","ch","2h","2h","6h",
+        "7h","3a","38","a8","3h","2h","6h","7h","36","3a","3h","2h","7h",
+        "8h","2h","4h","6h","7h","8h","2h","7h","2h","3h","7h","1h","2h",
+        "5h","ah","bh","3h","7h"];
+    for (let i = 0; i < solution.length; i++) {
+        move(table, convertMove(solution[i]));
+    }
+    var actual=JSON.stringify(table);
+    var expect= `{"reserves":["","","",""],"foundations":["KC","KD","KH","KS"],"cascades":[[],[],[],[],[],[],[],[]]}`;
+    if (expect !== actual) {
+        print("test_solve1 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
 }
