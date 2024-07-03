@@ -31,28 +31,39 @@
     }
 </style>
 <script type="text/javascript" src="js/main.js"></script>
+<script>
+var table;
+var ready = (callback) => {
+    if (document.readyState != "loading") {
+        callback();
+    } else {
+        document.addEventListener("DOMContentLoaded", callback);
+    }
+}
+ready(() => {
+    const form = document.getElementById("play_form");
+    const el = document.getElementById("text_area1");
+    table = createTableFromSeed(0);
+    el.value = JSON.stringify(table);
+});
+function processMove() {
+    const el = document.getElementById("text_area2");
+    var movestr = String(el.value).trim();
+    move(table, movestr);
+    const el2 = document.getElementById("text_area1");
+    el2.value = JSON.stringify(table);
+}
+</script>
 </head>
 <body>
 <div class="center unselectable">
-<table>
-    <tr>
-        <td>@</td>
-        <td>AC AD AH AS</td>
-    <tr>
-    <tr>
-        <td>#</td>
-        <td>KC KD KH KS</td>
-    <tr>
-    <td>1</td>
-    <td><span class="red">QD 4D TD</span> <span class="black">7S</span> <span class="red">AH 3H</span> <span class="black">AS</span></td>
-    </tr>
-</table>
+    <table id="table1"></table>
 <br>
-<form id="play_form" method="dialog">
-    <textarea id="text_area1" rows="1" cols="40"></textarea>
-    <br>
-    <input type="submit" id="move_btn" value="Move">
-</form>
+<textarea id="text_area1" rows="12" cols="40"></textarea>
+<br>
+<textarea id="text_area2" rows="1" cols="40"></textarea>
+<br>
+<input type="submit" id="move_btn" value="Move" onclick="processMove()">
 </div>
 </body>
 </html>

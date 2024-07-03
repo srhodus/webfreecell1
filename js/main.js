@@ -23,6 +23,21 @@ function createTableFromJson(desc) {
     return JSON.parse(desc);
 }
 
+function createTableFromSeed(seed) {
+    var table = createTable();
+    table.cascades = JSON.parse(`[
+            ["QD","4D","TD","7S","AH","3H","AS"],
+            ["QC","JD","JC","9D","9S","AD","5S"],
+            ["KC","JS","8C","KS","TC","7H","TH"],
+            ["3C","6H","6C","7C","2S","3D","JH"],
+            ["4C","QS","8S","6S","3S","5H"],
+            ["2C","6D","4S","4H","TS","8D"],
+            ["KD","2D","5D","AC","9H","KH"],
+            ["5C","9C","QH","8H","2H","7D"]
+    ]`);
+    return table;
+}
+
 function suit(str) {
     var valid = true;
     if (str.length !== 2) {
@@ -248,25 +263,6 @@ if (typeof window === 'undefined') {
     test_move25();
     test_move26();
     test_solve1();
-} else {
-    var ready = (callback) => {
-        if (document.readyState != "loading") {
-            callback();
-        } else {
-            document.addEventListener("DOMContentLoaded", callback);
-        }
-    }
-
-    ready(() => {
-        const form = document.getElementById("play_form");
-        form.addEventListener("submit", (e) => {
-            switch (e.submitter.id) {
-                case "move_btn":
-                    console.log("You clicked on the move button!");
-                    break;
-            }
-        });
-    });
 }
 
 function test_createTable() {
