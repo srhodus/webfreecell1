@@ -40,18 +40,22 @@ var ready = (callback) => {
         document.addEventListener("DOMContentLoaded", callback);
     }
 }
+
 ready(() => {
-    const form = document.getElementById("play_form");
     const el = document.getElementById("text_area1");
     table = createTableFromSeed(0);
     el.value = JSON.stringify(table);
 });
-function processMove() {
+
+function getMoveString() {
     const el = document.getElementById("text_area2");
-    var movestr = String(el.value).trim();
-    move(table, movestr);
-    const el2 = document.getElementById("text_area1");
-    el2.value = JSON.stringify(table);
+    return String(el.value).trim();
+}
+
+function processMove() {
+    move(table, convertMove(getMoveString()));
+    const el = document.getElementById("text_area1");
+    el.value = JSON.stringify(table);
 }
 </script>
 </head>
