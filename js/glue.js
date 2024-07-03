@@ -13,7 +13,7 @@ var ready = (callback) => {
 ready(() => {
     const el = document.getElementById("text_area1");
     table = createTableFromSeed(0);
-    el.value = JSON.stringify(table);
+    renderHtmlTable();
 });
 
 function getMoveString() {
@@ -21,8 +21,23 @@ function getMoveString() {
     return String(el.value).trim();
 }
 
+function renderHtmlTable() {
+    const el = document.getElementById("table1");
+    el.innerHTML = "";
+    for (let i = 0; i < table.cascades.length; i++) {
+        var tr = el.insertRow(-1);
+        for (let j = 0; j < table.cascades[i].length; j++) {
+            let cl = tr.insertCell(-1);
+            cl.innerHTML = table.cascades[i][j];
+        }
+    }
+}
+
 function processMove() {
-    move(table, convertMove(getMoveString()));
-    const el = document.getElementById("text_area1");
-    el.value = JSON.stringify(table);
+    try {
+        move(table, convertMove(getMoveString()));
+        renderHtmlTable();
+    } catch (e) {
+        console.log(e);
+    }
 }
