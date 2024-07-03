@@ -30,9 +30,37 @@ function renderHtmlTable() {
         cl.innerHTML = parseInt(i)+1;
         for (let j = 0; j < table.cascades[i].length; j++) {
             cl = tr.insertCell(-1);
-            cl.innerHTML = table.cascades[i][j];
+            cl.innerHTML = getCardCode(table.cascades[i][j]);
         }
     }
+}
+
+function getCardCode(desc) {
+    var base;
+    switch (suit(desc)) {
+        case 0:
+            // Clubs
+            base = `<span class="black">&#x1f0d`;
+            break;
+        case 1:
+            // Diamonds
+            base = `<span class="red">&#x1f0c`;
+            break;
+        case 2:
+            // Hearts
+            base = `<span class="red">&#x1f0b`;
+            break
+        case 3:
+            // Spades
+            base = `<span class="black">&#x1f0a`;
+            break;
+    }
+    var r = rank(desc);
+    if (r === 11 || r === 12) {
+        r++;
+    }
+    r++;
+    return base+r.toString(16)+"</span>";
 }
 
 function processMove() {
