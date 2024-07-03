@@ -26,8 +26,10 @@ function renderHtmlTable() {
     el.innerHTML = "";
     for (let i = 0; i < table.cascades.length; i++) {
         var tr = el.insertRow(-1);
+        let cl = tr.insertCell(-1);
+        cl.innerHTML = parseInt(i)+1;
         for (let j = 0; j < table.cascades[i].length; j++) {
-            let cl = tr.insertCell(-1);
+            cl = tr.insertCell(-1);
             cl.innerHTML = table.cascades[i][j];
         }
     }
