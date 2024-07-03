@@ -1,5 +1,6 @@
 'use strict';
 
+const MAX_DEAL_NO = 999999999;
 var table;
 
 var ready = (callback) => {
@@ -12,7 +13,7 @@ var ready = (callback) => {
 
 ready(() => {
     const el = document.getElementById("text_area1");
-    table = createTableFromSeed(0);
+    table = createTableFromSeed(Math.random()*MAX_DEAL_NO+1);
     renderHtmlTable();
 });
 
@@ -24,10 +25,32 @@ function getMoveString() {
 function renderHtmlTable() {
     const el = document.getElementById("table1");
     el.innerHTML = "";
+    var rr = el.insertRow(-1);
+    var c1 = rr.insertCell(-1);
+    c1.innerHTML = "Res.";
+    for (let i = 0; i < table.reserves.length; i++) {
+        var c1 = rr.insertCell(-1);
+        if (table.reserves[i].length === 0) {
+            c1.innerHTML = "&nbsp;";
+            continue;
+        }
+        c1.innerHTML = getCardCode(table.reserves[i]);
+    }
+    var fr = el.insertRow(-1);
+    var c2 = fr.insertCell(-1);
+    c2.innerHTML = "Fdn.";
+    for (let i = 0; i < table.foundations.length; i++) {
+        var c2 = fr.insertCell(-1);
+        if (table.foundations[i].length === 0) {
+            c2.innerHTML = "&nbsp;";
+            continue;
+        }
+        c2.innerHTML = getCardCode(table.foundations[i]);
+    }
     for (let i = 0; i < table.cascades.length; i++) {
         var tr = el.insertRow(-1);
         let cl = tr.insertCell(-1);
-        cl.innerHTML = parseInt(i)+1;
+        cl.innerHTML = (i+1).toString();
         for (let j = 0; j < table.cascades[i].length; j++) {
             cl = tr.insertCell(-1);
             cl.innerHTML = getCardCode(table.cascades[i][j]);
@@ -65,7 +88,8 @@ function getCardCode(desc) {
 
 function processMove() {
     try {
-        move(table, convertMove(getMoveString()));
+        var m = convertMove(getMoveString());
+        move(table, m);
         renderHtmlTable();
     } catch (e) {
         console.log(e);

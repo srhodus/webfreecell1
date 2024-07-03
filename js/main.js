@@ -1,5 +1,6 @@
 'use strict';
 
+const NO_CARDS = 52;
 const NO_CASCADES = 8;
 const NO_RESERVES = 4;
 const NO_FOUNDATIONS = 4;
@@ -25,16 +26,7 @@ function createTableFromJson(desc) {
 
 function createTableFromSeed(seed) {
     var table = createTable();
-    table.cascades = JSON.parse(`[
-            ["QD","4D","TD","7S","AH","3H","AS"],
-            ["QC","JD","JC","9D","9S","AD","5S"],
-            ["KC","JS","8C","KS","TC","7H","TH"],
-            ["3C","6H","6C","7C","2S","3D","JH"],
-            ["4C","QS","8S","6S","3S","5H"],
-            ["2C","6D","4S","4H","TS","8D"],
-            ["KD","2D","5D","AC","9H","KH"],
-            ["5C","9C","QH","8H","2H","7D"]
-    ]`);
+    table.cascades = getDeal(seed);
     return table;
 }
 
@@ -232,6 +224,43 @@ function convertMove(movestr) {
     return ret.join("");
 }
 
+function getDeal(seed) {
+    // Compatible with MS-FreeCell
+	function myRand(seed) {
+		return {
+			last: seed,
+			next() {
+				this.last = ((214013*this.last)+2531011)%(Math.pow(2, 31));
+				return this.last >> 16;
+			}
+		};
+	}
+	const rng = myRand(seed);
+	var t = new Int8Array(NO_CARDS);
+	for (let i = 0; i < NO_CARDS; i++) {
+		t[i] = (NO_CARDS-1)-i;
+	}
+	for (let i = 0; i < (NO_CARDS-1); i++) {
+		let j = (NO_CARDS-1)-rng.next()%(NO_CARDS-i);
+		seed = t[i];
+		t[i] = t[j];
+		t[j] = seed;
+	}
+	var cascades = new Array();
+	for (let i = 0; i < NO_CASCADES; i++) {
+		cascades.push([]);
+	}
+	var idx = 0;
+    for (let i = 0; i < t.length; i++) {
+		let card = RANK.charAt(t[i]/4);
+		card += SUIT.charAt(t[i]%4);
+		if (idx >= NO_CASCADES)
+			idx = 0;
+		cascades[idx++].push(card);
+	}
+	return cascades;
+}
+
 if (typeof window === 'undefined') {
     test_createTable();
     test_createTableFromJson1();
@@ -263,6 +292,7 @@ if (typeof window === 'undefined') {
     test_move25();
     test_move26();
     test_solve1();
+    test_deal1();
 }
 
 function test_createTable() {
@@ -729,6 +759,33 @@ function test_solve1() {
     var expect= `{"reserves":["","","",""],"foundations":["KC","KD","KH","KS"],"cascades":[[],[],[],[],[],[],[],[]]}`;
     if (expect !== actual) {
         print("test_solve1 failed!");
+        print("expected: " + expect);
+        print("actual  : " + actual);
+        throw new Error();
+    }
+}
+
+function test_deal1() {
+    var table = createTable();
+    table.cascades = getDeal(2);
+    var temp = `{
+    "reserves":["","","",""],
+    "foundations":["","","",""],
+    "cascades":[
+            ["QD","4D","TD","7S","AH","3H","AS"],
+            ["QC","JD","JC","9D","9S","AD","5S"],
+            ["KC","JS","8C","KS","TC","7H","TH"],
+            ["3C","6H","6C","7C","2S","3D","JH"],
+            ["4C","QS","8S","6S","3S","5H"],
+            ["2C","6D","4S","4H","TS","8D"],
+            ["KD","2D","5D","AC","9H","KH"],
+            ["5C","9C","QH","8H","2H","7D"]
+    ]}`;
+    var temp2 = JSON.parse(temp);
+    var expect = JSON.stringify(temp2);
+    var actual = JSON.stringify(table);
+    if (expect !== actual) {
+        print("test_deal1 failed!");
         print("expected: " + expect);
         print("actual  : " + actual);
         throw new Error();
