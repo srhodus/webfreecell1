@@ -27,7 +27,7 @@ function renderHtmlTable() {
     el.innerHTML = "";
     var rr = el.insertRow(-1);
     var c1 = rr.insertCell(-1);
-    c1.innerHTML = "Res.";
+    c1.innerHTML = "0";
     for (let i = 0; i < table.reserves.length; i++) {
         var c1 = rr.insertCell(-1);
         if (table.reserves[i].length === 0) {
@@ -38,7 +38,7 @@ function renderHtmlTable() {
     }
     var fr = el.insertRow(-1);
     var c2 = fr.insertCell(-1);
-    c2.innerHTML = "Fdn.";
+    c2.innerHTML = "9";
     for (let i = 0; i < table.foundations.length; i++) {
         var c2 = fr.insertCell(-1);
         if (table.foundations[i].length === 0) {
