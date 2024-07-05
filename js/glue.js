@@ -2,6 +2,7 @@
 
 const MAX_DEAL_NO = 999999999;
 var table;
+var movestr = "";
 
 var ready = (callback) => {
     if (document.readyState != "loading") {
@@ -15,12 +16,24 @@ ready(() => {
     const el = document.getElementById("text_area1");
     table = createTableFromSeed(Math.random()*MAX_DEAL_NO+1);
     renderHtmlTable();
+    document.addEventListener("click", function(e) {
+        if (event.target.parentElement) {
+            var temp = Number(event.target.parentElement.rowIndex);
+            if (temp === 0) {
+                movestr += "A";
+            } else if (temp === 1) {
+                movestr += "H";
+            } else {
+                temp -= 1;
+                movestr += temp.toString();
+            }
+            if (movestr.length >= 2) {
+                processMove();
+                movestr = "";
+            }
+        }
+    });
 });
-
-function getMoveString() {
-    const el = document.getElementById("text_area2");
-    return String(el.value).trim();
-}
 
 function renderHtmlTable() {
     const el = document.getElementById("table1");
@@ -28,32 +41,30 @@ function renderHtmlTable() {
     var rr = el.insertRow(-1);
     var c1 = rr.insertCell(-1);
     c1.innerHTML = "0";
+    c1 = rr.insertCell(-1);
     for (let i = 0; i < table.reserves.length; i++) {
-        var c1 = rr.insertCell(-1);
         if (table.reserves[i].length === 0) {
-            c1.innerHTML = "&nbsp;";
             continue;
         }
-        c1.innerHTML = getCardCode(table.reserves[i]);
+        c1.innerHTML += getCardCode(table.reserves[i]);
     }
     var fr = el.insertRow(-1);
     var c2 = fr.insertCell(-1);
     c2.innerHTML = "9";
+    var c2 = fr.insertCell(-1);
     for (let i = 0; i < table.foundations.length; i++) {
-        var c2 = fr.insertCell(-1);
         if (table.foundations[i].length === 0) {
-            c2.innerHTML = "&nbsp;";
             continue;
         }
-        c2.innerHTML = getCardCode(table.foundations[i]);
+        c2.innerHTML += getCardCode(table.foundations[i]);
     }
     for (let i = 0; i < table.cascades.length; i++) {
         var tr = el.insertRow(-1);
-        let cl = tr.insertCell(-1);
+        var cl = tr.insertCell(-1);
         cl.innerHTML = (i+1).toString();
+        cl = tr.insertCell(-1);
         for (let j = 0; j < table.cascades[i].length; j++) {
-            cl = tr.insertCell(-1);
-            cl.innerHTML = getCardCode(table.cascades[i][j]);
+            cl.innerHTML += getCardCode(table.cascades[i][j]);
         }
     }
 }
@@ -75,7 +86,7 @@ function getCardCode(desc) {
             break
         case 3:
             // Spades
-            base = `<span class="black">&#x1f0a`;
+             base = `<span class="black">&#x1f0a`;
             break;
     }
     var r = rank(desc);
@@ -88,7 +99,8 @@ function getCardCode(desc) {
 
 function processMove() {
     try {
-        var m = convertMove(getMoveString());
+        console.log(movestr);
+        var m = convertMove(movestr);
         move(table, m);
         renderHtmlTable();
     } catch (e) {
