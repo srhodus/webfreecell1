@@ -21,16 +21,18 @@ ready(() => {
             var temp = Number(event.target.parentElement.rowIndex);
             if (temp === 0) {
                 var found = false;
-                for (let i = 0; i < table.reserves.length; i++) {
-                    if (table.reserves[i].length === 0) {
-                        movestr += RESERVES[i];
-                        found = true;
-                        break;
+                if (movestr.length === 1) {
+                    for (let i = 0; i < table.reserves.length; i++) {
+                        if (table.reserves[i].length === 0) {
+                            movestr += RESERVES[i];
+                            found = true;
+                            break;
+                        }
                     }
-                }
-                if (!found) {
-                    throw new Error(`No empty reserves!`);
-                    movestr = "";
+                    if (!found) {
+                        throw new Error(`No empty reserves!`);
+                        movestr = "";
+                    }
                 }
             } else if (temp === 1) {
                 movestr += "H";
