@@ -57,9 +57,10 @@ function renderHtmlTable() {
     c1 = rr.insertCell(-1);
     for (let i = 0; i < table.reserves.length; i++) {
         if (table.reserves[i].length === 0) {
-            continue;
+            c1.innerHTML += getCardCode("rs");
+        } else {
+            c1.innerHTML += getCardCode(table.reserves[i]);
         }
-        c1.innerHTML += getCardCode(table.reserves[i]);
     }
     var fr = el.insertRow(-1);
     var c2 = fr.insertCell(-1);
@@ -67,9 +68,10 @@ function renderHtmlTable() {
     var c2 = fr.insertCell(-1);
     for (let i = 0; i < table.foundations.length; i++) {
         if (table.foundations[i].length === 0) {
-            continue;
+            c2.innerHTML += getCardCode("fd"+i);
+        } else {
+            c2.innerHTML += getCardCode(table.foundations[i]);
         }
-        c2.innerHTML += getCardCode(table.foundations[i]);
     }
     for (let i = 0; i < table.cascades.length; i++) {
         var tr = el.insertRow(-1);
@@ -84,6 +86,27 @@ function renderHtmlTable() {
 
 function getCardCode(desc) {
     var base;
+    if (desc === "rs") {
+        return `<span class="gray">&#x1f0a0</span>`;
+    }
+    if (desc.startsWith("fd")) {
+        var ret = "";
+        switch (Number(desc.slice(-1))) {
+            case 0:
+                ret = `<span class="gray">&#x1f0d1</span>`;
+                break;
+            case 1:
+                ret = `<span class="gray">&#x1f0c1</span>`;
+                break;
+            case 2:
+                ret = `<span class="gray">&#x1f0b1</span>`;
+                break;
+            case 3:
+                ret = `<span class="gray">&#x1f0a1</span>`;
+                break;
+        }
+        return ret;
+    }
     switch (suit(desc)) {
         case 0:
             // Clubs
