@@ -2,3 +2,4 @@
 - Supermove
 - Autoplay
 - Undo
+- Keyboard moves

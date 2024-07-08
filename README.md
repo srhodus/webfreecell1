@@ -1,2 +1,2 @@
-# FreeCell Game in Javascript
-Play it here: https://srhodus.github.io/webfreecell1/
+# Simple FreeCell Game in Javascript
+https://srhodus.github.io/webfreecell1/

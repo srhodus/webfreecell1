@@ -27,6 +27,9 @@
         transform: translate(-50%, -50%);
         padding: 6px;
     }
+    .highlight {
+        border-style: solid;
+    }
     .unselectable {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -41,6 +44,7 @@
 </head>
 <body>
 <div class="center unselectable">
+    <h3>Deal no. <input type="text" id="deal_text1" readonly></h3>
     <table id="table1"></table>
     <br>
     <i>
@@ -52,8 +56,8 @@
     </i>
     <br>
     <p>
-    <input type="text" id="move1">
-    <input type="button" id="move_btn1" value="Move">
+    <input type="text" id="move_text1">
+    <input type="button" id="move_btn1" value="Move" onclick="processMove()">
 </div>
 </body>
 </html>

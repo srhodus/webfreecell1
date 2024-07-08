@@ -2,6 +2,7 @@
 
 const MAX_DEAL_NO = 999999999;
 var table;
+var seed;
 var movestr = "";
 
 var ready = (callback) => {
@@ -14,12 +15,16 @@ var ready = (callback) => {
 
 ready(() => {
     const el = document.getElementById("text_area1");
-    table = createTableFromSeed(Math.random()*MAX_DEAL_NO+1);
+    seed = Math.random()*MAX_DEAL_NO+1;
+    table = createTableFromSeed(seed);
     renderHtmlTable();
 });
 
 function renderHtmlTable() {
+    const dn = document.getElementById("deal_text1");
+    dn.value = String(Math.round(seed));
     const el = document.getElementById("table1");
+    el.innerHTML = "";
     var rr = el.insertRow(-1);
     var c1 = rr.insertCell(-1);
     c1.innerHTML = "0";
@@ -104,6 +109,8 @@ function getCardCode(desc) {
 
 function processMove() {
     try {
+        const el = document.getElementById("move_text1");
+        movestr = String(el.value).trim();
         console.log(movestr);
         var m = convertMove(movestr);
         move(table, m);
