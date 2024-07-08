@@ -53,7 +53,6 @@ function renderHtmlTable() {
     el.innerHTML = "";
     var rr = el.insertRow(-1);
     var c1 = rr.insertCell(-1);
-    c1.innerHTML = "0";
     c1 = rr.insertCell(-1);
     for (let i = 0; i < table.reserves.length; i++) {
         if (table.reserves[i].length === 0) {
@@ -64,7 +63,6 @@ function renderHtmlTable() {
     }
     var fr = el.insertRow(-1);
     var c2 = fr.insertCell(-1);
-    c2.innerHTML = "9";
     var c2 = fr.insertCell(-1);
     for (let i = 0; i < table.foundations.length; i++) {
         if (table.foundations[i].length === 0) {
@@ -76,7 +74,6 @@ function renderHtmlTable() {
     for (let i = 0; i < table.cascades.length; i++) {
         var tr = el.insertRow(-1);
         var cl = tr.insertCell(-1);
-        cl.innerHTML = (i+1).toString();
         cl = tr.insertCell(-1);
         for (let j = 0; j < table.cascades[i].length; j++) {
             cl.innerHTML += getCardCode(table.cascades[i][j]);
