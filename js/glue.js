@@ -16,43 +16,13 @@ ready(() => {
     const el = document.getElementById("text_area1");
     table = createTableFromSeed(Math.random()*MAX_DEAL_NO+1);
     renderHtmlTable();
-    document.addEventListener("click", function(e) {
-        if (event.target.parentElement) {
-            var temp = Number(event.target.parentElement.rowIndex);
-            if (temp === 0) {
-                var found = false;
-                if (movestr.length === 1) {
-                    for (let i = 0; i < table.reserves.length; i++) {
-                        if (table.reserves[i].length === 0) {
-                            movestr += RESERVES[i];
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        throw new Error(`No empty reserves!`);
-                        movestr = "";
-                    }
-                }
-            } else if (temp === 1) {
-                movestr += "H";
-            } else {
-                temp -= 1;
-                movestr += temp.toString();
-            }
-            if (movestr.length >= 2) {
-                processMove();
-                movestr = "";
-            }
-        }
-    });
 });
 
 function renderHtmlTable() {
     const el = document.getElementById("table1");
-    el.innerHTML = "";
     var rr = el.insertRow(-1);
     var c1 = rr.insertCell(-1);
+    c1.innerHTML = "0";
     c1 = rr.insertCell(-1);
     for (let i = 0; i < table.reserves.length; i++) {
         if (table.reserves[i].length === 0) {
@@ -63,6 +33,7 @@ function renderHtmlTable() {
     }
     var fr = el.insertRow(-1);
     var c2 = fr.insertCell(-1);
+    c2.innerHTML = "9";
     var c2 = fr.insertCell(-1);
     for (let i = 0; i < table.foundations.length; i++) {
         if (table.foundations[i].length === 0) {
@@ -74,6 +45,7 @@ function renderHtmlTable() {
     for (let i = 0; i < table.cascades.length; i++) {
         var tr = el.insertRow(-1);
         var cl = tr.insertCell(-1);
+        cl.innerHTML = i+1;
         cl = tr.insertCell(-1);
         for (let j = 0; j < table.cascades[i].length; j++) {
             cl.innerHTML += getCardCode(table.cascades[i][j]);
