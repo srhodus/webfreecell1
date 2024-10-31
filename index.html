@@ -1,63 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<style>
-    * {
-        font-family: monospace;
-    }
-    .gray {
-        font-size: 32px;
-        color: DimGray;
-    }
-    .red {
-        font-size: 32px;
-        color: salmon;
-    }
-    .black {
-        font-size: 32px;
-        color: olive;
-    }
-    table {
-        width: 460px;
-    }
-    .center {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 6px;
-    }
-    .highlight {
-        border-style: solid;
-    }
-    .unselectable {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-</style>
-<script type="text/javascript" src="js/main.js"></script>
-<script type="text/javascript" src="js/glue.js"></script>
+    <meta charset="utf-8" />
+    <style>* { padding: 0; margin: 0; } canvas { background: #eee; display: block; margin: 0 auto; }</style>
+    <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
-<div class="center unselectable">
-    <h3>Deal no. <input type="text" id="deal_text1" readonly></h3>
-    <table id="table1"></table>
-    <br>
-    <i>
-        Cascade moves: 12, 81...
-    <br>
-        Reserves (i.e., FreeCells) A,B,C,D: 1A, 8D, 2H...
-    <br>
-        Foundations (i.e., HomeCells) H: 1H, 8H...
-    </i>
-    <br>
-    <p>
-    <input type="text" id="move_text1">
-    <input type="button" id="move_btn1" value="Move" onclick="processMove()">
-</div>
+<canvas id="canvas"></canvas>
 </body>
 </html>
